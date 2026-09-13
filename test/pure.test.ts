@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeTagNames, parseRepoSlug } from '@/git.ts'
+import { computeReleaseCommitMessage, computeTagNames, parseRepoSlug } from '@/git.ts'
 import { releaseBranchName } from '@/pr.ts'
 import { resolveDistTag } from '@/publish.ts'
 
@@ -20,6 +20,27 @@ describe('computeTagNames（REQUIREMENTS §5）', () => {
             { name: '@s/a', newVersion: '1.0.0' },
             { name: 'b', newVersion: '2.0.0' },
         ], true)).toEqual(['@s/a@v1.0.0', 'b@v2.0.0'])
+    })
+})
+
+describe('computeReleaseCommitMessage', () => {
+    it('单包项目不添加 scope', () => {
+        expect(computeReleaseCommitMessage([
+            { name: '@scope/package', newVersion: '1.2.3' },
+        ], false)).toBe('release: v1.2.3')
+    })
+
+    it('monorepo 单包发布使用 package name 作为 scope', () => {
+        expect(computeReleaseCommitMessage([
+            { name: '@scope/package', newVersion: '1.2.3' },
+        ], true)).toBe('release(@scope/package): v1.2.3')
+    })
+
+    it('monorepo 多包发布使用汇总提交', () => {
+        expect(computeReleaseCommitMessage([
+            { name: '@scope/a', newVersion: '1.2.3' },
+            { name: '@scope/b', newVersion: '1.2.3' },
+        ], true)).toBe('release: v1.2.3')
     })
 })
 

@@ -105,7 +105,7 @@
 4. 版本计算与交互确认（按 §3 场景矩阵）
 5. 写入 --files 文件（保留原缩进与尾换行；package-lock.json 同步根
    version 与 packages[""].version 两处；monorepo 在对应包目录及仓库根更新）
-6. git add（--files 涉及文件）+ commit（chore(release): <tag 名>）
+6. git add（--files 涉及文件）+ commit（单包项目：`release: <tag 名>`；monorepo 单包发布：`release(<package name>): <tag 名>`）
 7. 打 git tag（--tag，按 §5 格式）
 8. 分支处置：
    --git true  → 推送默认分支 commit 与全部 tag
@@ -114,7 +114,7 @@
 10. 汇总输出：各包 旧版本 → 新版本、tag、发布结果 / PR 链接（picocolors / boxen 美化）
 ```
 
-- commit message 约定：`chore(release): <tag 名>`；monorepo 多版本场景建议 `chore(release): monorepo`。
+- commit message 约定：单包项目使用 `release: <tag 名>`；monorepo 单包发布使用 `release(<package.json name>): <tag 名>`，例如 `release(@scope/package): v1.2.3`；monorepo 多包发布使用汇总提交，版本一致时为 `release: vX.Y.Z`，版本不一致时为 `release: monorepo`。
 
 ## 9. releaseType 语义表
 

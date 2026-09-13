@@ -66,7 +66,7 @@ describe('monorepo 统一升级链路', () => {
 
         expect(await gitPreflight(root)).toMatchObject({ branch: 'main', defaultBranch: 'main' })
 
-        await commitRelease(root, [...new Set(changed)], 'chore(release): v1.1.0')
+        await commitRelease(root, [...new Set(changed)], 'release: v1.1.0')
 
         const tagNames = computeTagNames(targets, true)
         expect(tagNames).toEqual(['v1.1.0'])
@@ -74,7 +74,7 @@ describe('monorepo 统一升级链路', () => {
 
         expect(await tagExists(root, 'v1.1.0')).toBe(true)
         expect((await gitPreflight(root)).dirtyFiles).toHaveLength(0)
-        expect(git(['log', '-1', '--pretty=%s'], root)).toBe('chore(release): v1.1.0')
+        expect(git(['log', '-1', '--pretty=%s'], root)).toBe('release: v1.1.0')
     })
 
     it('重复 tag 前置校验可被 tagExists 拦截', async () => {
@@ -99,7 +99,7 @@ describe('monorepo 统一升级链路', () => {
 
         const [target] = toTarget(project, '1.1.0')
         const results = await applyVersionFiles(target!, ['package.json'])
-        await commitRelease(root, results.filter(r => r.updated).map(r => r.file), 'chore(release): v1.1.0')
+        await commitRelease(root, results.filter(r => r.updated).map(r => r.file), 'release: v1.1.0')
         await createTag(root, computeTagNames([target!], false)[0]!)
 
         expect(JSON.parse(await readFile(join(root, 'package.json'), 'utf-8')).version).toBe('1.1.0')
