@@ -2,7 +2,7 @@ import type { CliOptions, ProjectContext, ReleaseTarget, ResolvedOptions } from 
 import process from 'node:process'
 import { resolveOptions } from '@/config.ts'
 import { applyVersionFiles, syncWorkspaceDependencies } from '@/files.ts'
-import { checkoutBranch, commitRelease, computeTagNames, createTag, gitPreflight, parseRepoSlug, pushBranchAndTags, tagExists } from '@/git.ts'
+import { checkoutBranch, commitRelease, computeReleaseCommitMessage, computeTagNames, createTag, gitPreflight, parseRepoSlug, pushBranchAndTags, tagExists } from '@/git.ts'
 import { createAndPushBranch, createPr, releaseBranchName } from '@/pr.ts'
 import { detectProject } from '@/project.ts'
 import { confirmAction, selectPackages, selectPerPackageVersions, selectReleaseVersion } from '@/prompts.ts'
@@ -184,7 +184,7 @@ export const runRelease = async (cliOptions: CliOptions): Promise<void> => {
     }
 
     // ---- git commit / tag ----
-    const commitMessage = tagNames.length === 1 ? `chore(release): ${tagNames[0]}` : 'chore(release): monorepo'
+    const commitMessage = computeReleaseCommitMessage(targets, project.isMonorepo)
     step(`提交版本变更: ${commitMessage}`)
     await commitRelease(project.root, [...new Set(changedFiles)], commitMessage)
 

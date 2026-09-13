@@ -86,6 +86,18 @@ export const computeTagNames = (targets: Pick<ReleaseTarget, 'name' | 'newVersio
     return targets.map(t => `${t.name}@v${t.newVersion}`)
 }
 
+export const computeReleaseCommitMessage = (
+    targets: Pick<ReleaseTarget, 'name' | 'newVersion'>[],
+    isMonorepo: boolean,
+): string => {
+    if (isMonorepo && targets.length === 1) {
+        return `release(${targets[0]!.name}): v${targets[0]!.newVersion}`
+    }
+
+    const tagNames = computeTagNames(targets, isMonorepo)
+    return tagNames.length === 1 ? `release: ${tagNames[0]}` : 'release: monorepo'
+}
+
 export const pushBranchAndTags = async (cwd: string, branch: string, tags: string[]): Promise<void> => {
     await run('git', ['push', 'origin', branch], { cwd })
     if (tags.length) {
