@@ -97,20 +97,20 @@
 
 ```
 1. 解析 CLI 参数（cac + parseAsync）
-2. 前置校验（全部通过才继续）：
+2. 识别项目形态（单包 / monorepo），过滤 private 包
+3. 前置校验（全部通过才继续）：
    git 仓库 / 工作区无未提交变更 / 当前在默认分支
    --pr 时：gh 已安装且已认证
    --submit 时：npm 已登录 / 目标版本未发布 / tag 不存在
-3. 识别项目形态（单包 / monorepo），过滤 private 包
-4. 版本计算与交互确认（按 §3 场景矩阵）
+4. 版本计算与交互选择（按 §3 场景矩阵）
 5. 写入 --files 文件（保留原缩进与尾换行；package-lock.json 同步根
    version 与 packages[""].version 两处；monorepo 在对应包目录及仓库根更新）
-6. git add（--files 涉及文件）+ commit（单包项目：`release: <tag 名>`；monorepo 单包发布：`release(<package name>): <tag 名>`）
-7. 打 git tag（--tag，按 §5 格式）
-8. 分支处置：
+6. npm publish（--submit，按 §7 规则逐个执行）；任一发布失败立即停止，不创建 commit / tag
+7. git add（--files 涉及文件）+ commit（单包项目：`release: <tag 名>`；monorepo 单包发布：`release(<package name>): <tag 名>`）
+8. 打 git tag（--tag，按 §5 格式）
+9. 分支处置：
    --git true  → 推送默认分支 commit 与全部 tag
    --pr true   → 切 release 分支 → push 分支 → gh pr create（tag 不推送）
-9. npm publish（--submit，按 §7 规则逐个执行）
 10. 汇总输出：各包 旧版本 → 新版本、tag、发布结果 / PR 链接（picocolors / boxen 美化）
 ```
 

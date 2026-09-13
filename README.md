@@ -5,7 +5,7 @@
 ## 使用
 
 ```bash
-# 交互式（默认全流程：写版本 → commit → tag → 推送 → npm publish）
+# 交互式（默认全流程：前置检查 → 选择版本 → npm publish → commit → tag → 推送）
 dnmp
 
 # 显式指定升级类型，跳过交互
@@ -39,6 +39,7 @@ dnmp --release minor --pr
 
 - **项目识别**：自动识别单包 / monorepo（`pnpm-workspace.yaml` 与 npm `workspaces` 字段均支持）；`private: true` 的包不升级、不打 tag、不发布。
 - **monorepo 交互**：改动前各包版本一致时只交互一次并同步更新 workspace 内部依赖区间；版本不一致时逐包选择。
+- **发布顺序**：选择版本并写入待发布文件后，先执行 `npm publish`，成功后才创建版本 commit 和 git tag；发布失败不会创建 commit/tag。
 - **前置校验**：git 仓库、工作区干净、当前在默认分支、tag 不存在；`--pr` 校验 gh 认证；`--submit` 校验 npm 登录。
 - **配置优先级**：CLI 参数 > `dnmp.config`（c12）> 内置默认值；`--opt` 例外，`env.opt` 优先。
 - **CI 模式**：检测到 `CI` / `GITHUB_ACTIONS` 时禁用交互，必须显式传 `--release`。
