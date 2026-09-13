@@ -5,15 +5,15 @@
         "paths": {
             "@/*": [
                 "./src/*"
-            ],
-            "#/*": [
-                "./src/types/*",
-                "./types/*"
             ]
         },
         "resolveJsonModule": true,
         "noUnusedLocals": false,
         "noUnusedParameters": false,
         "declarationMap": false
-    }
+    },
+    "exclude": [
+        "dist",
+        "node_modules"
+    ]
 }

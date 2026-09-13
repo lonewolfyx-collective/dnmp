@@ -11,24 +11,23 @@
         "url": "https://github.com/lonewolfyx/dnmp/issues"
     },
     "keywords": [],
-    "exports": {
-        ".": "./dist/index.mjs",
-        "./package.json": "./package.json"
-    },
-    "main": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.mts",
     "bin": {
         "dnmp": "./bin/cli.js"
     },
     "files": [
+        "bin",
         "dist"
     ],
+    "engines": {
+        "node": ">=20.11"
+    },
     "scripts": {
         "dev": "tsdown --watch",
         "build": "tsdown",
         "lint": "eslint",
         "lint:fix": "eslint --fix",
+        "test": "vitest run",
+        "typecheck": "tsc --noEmit",
         "prepublishOnly": "pnpm build",
         "prepare": "simple-git-hooks"
     },
@@ -41,11 +40,8 @@
         "boxen": "^8.0.1",
         "c12": "^3.3.3",
         "cac": "^6.7.14",
-        "dayjs": "^1.11.19",
-        "defu": "^6.1.4",
         "find-up": "^8.0.0",
         "glob": "^13.0.0",
-        "jiti": "^2.6.1",
         "semver": "^7.7.3",
         "tinyexec": "^1.0.2",
         "yaml": "^2.8.2"
@@ -61,7 +57,8 @@
         "simple-git-hooks": "^2.13.1",
         "tsdown": "^0.18.2",
         "tsx": "^4.21.0",
-        "typescript": "^5.9.3"
+        "typescript": "^5.9.3",
+        "vitest": "^4.1.11"
     },
     "simple-git-hooks": {
         "pre-commit": "npx lint-staged",
