@@ -183,6 +183,22 @@ export const runRelease = async (cliOptions: CliOptions): Promise<void> => {
         throw new Error('没有文件需要更新，请检查 --files 配置')
     }
 
+    // ---- npm publish（逐个、fail-fast） ----
+    // 先发布，再落 release commit / tag；发布失败时保留版本文件变更供排查，
+    // 但不会生成与实际发布状态不一致的 commit / tag。
+    const extras: string[] = []
+    if (options.submit) {
+        for (const target of targets) {
+            const distTag = resolveDistTag(target.newVersion, options.npmTag, options.npmTagExplicit)
+            step(`${target.name}: npm publish --tag ${distTag}${options.opt ? ` ${options.opt}` : ''}`)
+            await npmPublish(target.dir, distTag, options.opt)
+            target.published = true
+        }
+    }
+    else {
+        extras.push('npm publish 已跳过（--no-submit）')
+    }
+
     // ---- git commit / tag ----
     const commitMessage = computeReleaseCommitMessage(targets, project.isMonorepo)
     step(`提交版本变更: ${commitMessage}`)
@@ -196,7 +212,6 @@ export const runRelease = async (cliOptions: CliOptions): Promise<void> => {
     }
 
     // ---- 分支处置：PR 或直接推送 ----
-    const extras: string[] = []
     if (options.pr) {
         const repo = parseRepoSlug(git.remoteUrl)
         const branch = releaseBranchName(project.isMonorepo, targets[0]!.newVersion)
@@ -231,19 +246,6 @@ export const runRelease = async (cliOptions: CliOptions): Promise<void> => {
     else if (options.git) {
         step(`推送 ${git.branch} 与 tags 到远程`)
         await pushBranchAndTags(project.root, git.branch, options.tag ? tagNames : [])
-    }
-
-    // ---- npm publish（逐个、fail-fast） ----
-    if (options.submit) {
-        for (const target of targets) {
-            const distTag = resolveDistTag(target.newVersion, options.npmTag, options.npmTagExplicit)
-            step(`${target.name}: npm publish --tag ${distTag}${options.opt ? ` ${options.opt}` : ''}`)
-            await npmPublish(target.dir, distTag, options.opt)
-            target.published = true
-        }
-    }
-    else {
-        extras.push('npm publish 已跳过（--no-submit）')
     }
 
     printSummary(targets, options.tag ? tagNames : [], extras)
