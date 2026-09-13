@@ -1,7 +1,7 @@
 {
     "name": "dnmp",
     "type": "module",
-    "version": "0.0.0-alpha.0.5",
+    "version": "0.0.1",
     "packageManager": "pnpm@10.15.1",
     "description": "Interactive CLI that bumps your version numbers and more",
     "author": "lonewolfyx <olddrivero.king@qq.com>",
